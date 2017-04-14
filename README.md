@@ -1,12 +1,12 @@
 vimplugin-cli
 =============
 
-[WIP] A CLI to manage your vim plugins
+A CLI to manage your vim plugins
 
 Support:
 ------
-* [vim-plug](https://github.com/junegunn/vim-plug)
-* [vundle](https://github.com/VundleVim/Vundle.vim)
+- [x] [vim-plug](https://github.com/junegunn/vim-plug)
+- [ ] [vundle](https://github.com/VundleVim/Vundle.vim)
 
 Usage:
 ------
