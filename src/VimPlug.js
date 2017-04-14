@@ -12,7 +12,7 @@ type PluginLineIndexMapper = {
   [plugin: string]: number
 }
 
-export default class VimPlug {
+export default class VimPlug implements VimPlugin {
   vimrc: Path
   vimdir: Path
   settings: Path
@@ -25,14 +25,14 @@ export default class VimPlug {
     Object.freeze(this)
   }
 
-  async remove (pluginToSearch: string) {
+  async remove (pluginToSearch: string): Promise<*> {
     const vimrcContent = this.getVimrcContent()
 
     await this.findAndRemovePlugs(pluginToSearch, vimrcContent)
     await this.findAndRemovePluginSetting(pluginToSearch)
   }
 
-  async find (pluginToSearch: string) {
+  find (pluginToSearch: string): void {
     const vimrcContent = this.getVimrcContent()
 
     const mapper = this.buildPluginAndLineIndexMapper(pluginToSearch, vimrcContent)
@@ -40,7 +40,7 @@ export default class VimPlug {
     Object.keys(mapper).forEach(plugin => log(chalk.green(`Found: ${plugin}`)))
   }
 
-  async list () {
+  list (): void {
     const vimrcContent = this.getVimrcContent()
 
     const regex = new RegExp(`Plug '(.+)'`)

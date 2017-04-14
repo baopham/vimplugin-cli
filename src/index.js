@@ -1,8 +1,6 @@
 // @flow
 
 import 'babel-polyfill'
-import VimPlug from './VimPlug'
+import VimPluginManager from './VimPluginManager'
 
-export default {
-  VimPlug
-}
+export default VimPluginManager

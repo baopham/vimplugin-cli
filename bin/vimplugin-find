@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
-var program = require('commander');
-var lib = require('../lib').default;
-var chalk = require('chalk');
+var program = require('commander')
+var VimPluginManager = require('../lib').default
+var chalk = require('chalk')
 var helpers = require('../lib/commander-helpers')
 
 helpers
   .setCommonProgramOptions(program)
   .parse(process.argv)
 
-var vimplug = new lib.VimPlug(program.vimrc, program.vimdir, program.settings)
+var manager = new VimPluginManager(program.vimrc)
+var vimplugin = manager.get(program.vimrc, program.vimdir, program.settings)
 
 var plugins = program.args;
 
@@ -23,5 +24,5 @@ if (plugins.length > 1) {
   return
 }
 
-vimplug.find(plugins[0])
+vimplugin.find(plugins[0])
 
