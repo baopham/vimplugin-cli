@@ -1,6 +1,6 @@
 {
   "name": "vimplugin-cli",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A CLI to manage your vim plugins",
   "main": "lib/index.js",
   "files": [
@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/baopham/vimplugin-cli#readme",
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "chalk": "^1.1.3",
     "commander": "^2.9.0",
     "inquirer": "^3.0.6"
@@ -46,7 +47,6 @@
     "babel-eslint": "^7.2.2",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.0",
