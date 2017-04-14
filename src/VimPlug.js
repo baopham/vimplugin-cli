@@ -25,14 +25,14 @@ export default class VimPlug {
     Object.freeze(this)
   }
 
-  remove (pluginToSearch: string) {
+  async remove (pluginToSearch: string) {
     const vimrcContent = this.getVimrcContent()
 
-    this.findAndRemovePlugs(pluginToSearch, vimrcContent)
-      .then(() => this.findAndRemovePluginSetting(pluginToSearch))
+    await this.findAndRemovePlugs(pluginToSearch, vimrcContent)
+    await this.findAndRemovePluginSetting(pluginToSearch)
   }
 
-  findAndRemovePluginSetting (pluginToSearch: string): Promise<*> {
+  async findAndRemovePluginSetting (pluginToSearch: string): Promise<*> {
     if (!fs.existsSync(this.settings)) {
       return Promise.resolve()
     }
@@ -51,21 +51,20 @@ export default class VimPlug {
       message: `Found setting file: ${path}. You sure you want to remove it?`
     }))
 
-    return inquirer.prompt(questions)
-      .then(answers => {
-        const settingsToRemove = Object.keys(answers)
-          .filter(index => answers[index])
-          .map(index => settingFiles[index - 1])
+    const answers = await inquirer.prompt(questions)
 
-        settingsToRemove.forEach(path => {
-          log(chalk.green(`Removing setting file ${path}...`))
-          fs.unlink(path)
-          log(chalk.green(`${path} is removed`))
-        })
-      })
+    const settingsToRemove = Object.keys(answers)
+      .filter(index => answers[index])
+      .map(index => settingFiles[index - 1])
+
+    settingsToRemove.forEach(path => {
+      log(chalk.green(`Removing setting file ${path}...`))
+      fs.unlink(path)
+      log(chalk.green(`${path} is removed`))
+    })
   }
 
-  findAndRemovePlugs (pluginToSearch: string, vimrcContent: string): Promise<*> {
+  async findAndRemovePlugs (pluginToSearch: string, vimrcContent: string): Promise<*> {
     const mapper = this.buildPluginAndLineIndexMapper(pluginToSearch, vimrcContent)
 
     const plugins = Object.keys(mapper)
@@ -82,18 +81,17 @@ export default class VimPlug {
       message: `Found ${plugin}. You sure you want to remove it?`
     }))
 
-    return inquirer.prompt(questions)
-      .then(answers => {
-        const pluginsToRemove = Object.keys(answers)
-          .filter(index => answers[index])
-          .map(index => plugins[index - 1])
+    const answers = await inquirer.prompt(questions)
 
-        pluginsToRemove.forEach(plugin => {
-          log(chalk.green(`Removing ${plugin}...`))
-          this.removePlug(plugin, mapper, vimrcContent)
-          log(chalk.green(`${plugin} is removed`))
-        })
-      })
+    const pluginsToRemove = Object.keys(answers)
+      .filter(index => answers[index])
+      .map(index => plugins[index - 1])
+
+    pluginsToRemove.forEach(plugin => {
+      log(chalk.green(`Removing ${plugin}...`))
+      this.removePlug(plugin, mapper, vimrcContent)
+      log(chalk.green(`${plugin} is removed`))
+    })
   }
 
   getVimrcContent () {
