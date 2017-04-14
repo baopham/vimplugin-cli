@@ -12,8 +12,7 @@ import {
 } from './vimplugin-helpers'
 
 import type {
-  RegexAndGroups,
-  PluginLineIndexMapper
+  RegexAndGroups
 } from './vimplugin-helpers'
 
 const log = console.log
