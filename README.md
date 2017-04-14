@@ -6,7 +6,7 @@ A CLI to manage your vim plugins
 Support:
 ------
 - [x] [vim-plug](https://github.com/junegunn/vim-plug)
-- [ ] [vundle](https://github.com/VundleVim/Vundle.vim)
+- [x] [vundle](https://github.com/VundleVim/Vundle.vim)
 
 Usage:
 ------
@@ -28,6 +28,9 @@ Usage: vimplugin [options] [command]
     -V, --version  output the version number
 ```
 
+`vimplugin rm` will remove the line in your .vimrc where it installs the plugin, delete the configuration file for this plugin in the specified settings directory. Before anything is deleted, the command will prompt you for confirmation.  
+
+I built this so that it's quicker to uninstall a plugin with my particular [vim setup](https://github.com/baopham/vim)
 
 Requirements:
 -------------
