@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var homedir = require('os').homedir();
+var lib = require('../lib').default;
+var chalk = require('chalk');
+
+program
+  .option('--vimdir [vimdir]', 'Vim directory. Default to ~/.vim', `${homedir}/.vim`)
+  .option('--settings [settings]', 'Vim settings directory (where you configure your plugins). Default to ~/.vim/settings', `${homedir}/.vim/settings`)
+  .option('--vimrc [vimrc]', '.vimrc path. Default to ~/.vimrc', `${homedir}/.vimrc`)
+  .parse(process.argv)
+
+var vimplug = new lib.VimPlug(program.vimrc, program.vimdir, program.settings)
+
+var plugins = program.args;
+
+if (!plugins.length) {
+  chalk.yellow('Please specify a plugin')
+  return
+}
+
+if (plugins.length > 1) {
+  chalk.yellow('Please specify one plugin')
+  return
+}
+
+vimplug.remove(plugins[0])

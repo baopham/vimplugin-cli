@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+var program = require('commander')
+
+program
+  .version('1.0.0')
+  .command('rm <plugin>', 'Remove a plugin')
+  .command('find <plugin>', 'Search for an installed plugin')
+  .command('list', 'List all installed plugins')
+  .parse(process.argv)
