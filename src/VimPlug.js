@@ -40,6 +40,29 @@ export default class VimPlug {
     Object.keys(mapper).forEach(plugin => log(chalk.green(`Found: ${plugin}`)))
   }
 
+  async list () {
+    const vimrcContent = this.getVimrcContent()
+
+    const regex = new RegExp(`Plug '(.+)'`)
+
+    vimrcContent.split(EOL).forEach(line => {
+      if (!line.startsWith('Plug ')) {
+        return
+      }
+
+      const plugs = line.includes('|')
+        ? line.split('|').map(plug => plug.trim())
+        : [line.trim()]
+
+      const plugins = plugs
+        .filter(plug => regex.test(plug))
+        .map(plug => regex.exec(plug)[1])
+        .map(plug => plug.replace(new RegExp(`,\\s*{.+$`), '').replace(`'`, ''))
+
+      plugins.forEach(plugin => log(chalk.green(plugin)))
+    })
+  }
+
   async findAndRemovePluginSetting (pluginToSearch: string): Promise<*> {
     if (!fs.existsSync(this.settings)) {
       return Promise.resolve()

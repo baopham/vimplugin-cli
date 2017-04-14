@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var lib = require('../lib').default;
+var chalk = require('chalk');
+var helpers = require('../lib/commander-helpers')
+
+helpers
+  .setCommonProgramOptions(program)
+  .parse(process.argv)
+
+var vimplug = new lib.VimPlug(program.vimrc, program.vimdir, program.settings)
+
+vimplug.list()
+
