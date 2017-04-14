@@ -2,7 +2,7 @@
   "parser"  : "babel-eslint",
   "extends": [
     "standard",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
     "plugin:import/errors"
   ],
   "env": {
