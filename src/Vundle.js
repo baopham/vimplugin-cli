@@ -1,8 +1,8 @@
 // @flow
 
 import fs from 'fs'
-import inquirer from 'inquirer'
 import chalk from 'chalk'
+import inquirer from 'inquirer'
 import {
   getVimrcContent,
   getVimrcLines,
@@ -18,7 +18,7 @@ import type {
 
 const log = console.log
 
-export default class VimPlug implements VimPlugin {
+export default class Vundle implements VimPlugin {
   vimrc: Path
   vimdir: Path
   settings: Path
@@ -32,14 +32,12 @@ export default class VimPlug implements VimPlugin {
   }
 
   async remove (pluginToSearch: string): Promise<*> {
-    await this.findAndRemovePlugs(pluginToSearch)
+    await this.findAndRemovePlugins(pluginToSearch)
     await findAndRemovePluginSettings(pluginToSearch, this.settings)
   }
 
   find (pluginToSearch: string): void {
-    const vimrcContent = getVimrcContent(this.vimrc)
-
-    const mapper = buildPluginAndLineIndexMapper(this.getPluginRegex(pluginToSearch), vimrcContent)
+    const mapper = buildPluginAndLineIndexMapper(this.getPluginRegex(pluginToSearch), getVimrcContent(this.vimrc))
 
     const plugins = Object.keys(mapper)
 
@@ -54,44 +52,31 @@ export default class VimPlug implements VimPlugin {
   list (): void {
     const vimrcContent = getVimrcContent(this.vimrc)
 
-    const regex = new RegExp(`Plug '(.+)'`)
+    const regex = new RegExp(`^(Bundle|Plugin) '(.+)'`)
     const regexGroups = {
-      Plugin: 1
+      Plugin: 2
     }
 
     getVimrcLines(vimrcContent).forEach(line => {
-      if (!line.startsWith('Plug ')) {
+      if (!regex.test(line)) {
         return
       }
 
-      const plugs = line.includes('|')
-        ? line.split('|').map(plug => plug.trim())
-        : [line.trim()]
+      const plugin = regex.exec(line)[regexGroups.Plugin]
 
-      const plugins = plugs
-        .filter(plug => regex.test(plug))
-        .map(plug => regex.exec(plug)[regexGroups.Plugin])
-        .map(plug => plug.replace(new RegExp(`,\\s*{.+$`), '').replace(`'`, ''))
-
-      plugins.forEach(plugin => log(chalk.green(plugin)))
+      log(chalk.green(plugin))
     })
   }
 
-  async findAndRemovePlugs (pluginToSearch: string): Promise<*> {
+  async findAndRemovePlugins (pluginToSearch: string): Promise<*> {
     const vimrcContent = getVimrcContent(this.vimrc)
 
     const mapper = buildPluginAndLineIndexMapper(this.getPluginRegex(pluginToSearch), vimrcContent)
 
     const plugins = Object.keys(mapper)
 
-    if (plugins.length === 0) {
-      log(chalk.yellow(`Found no plugins that match ${pluginToSearch}`))
-      return Promise.resolve()
-    }
-
     const questions = plugins.map((plugin, index) => ({
       type: 'confirm',
-      // Need to use index here, plugin could contain periods
       name: index + 1,
       message: `Found ${plugin}. You sure you want to remove it?`
     }))
@@ -104,44 +89,27 @@ export default class VimPlug implements VimPlugin {
 
     pluginsToRemove.forEach(plugin => {
       log(chalk.green(`Removing ${plugin}...`))
-      this.removePlug(plugin)
+      this.removePlugin(plugin)
       log(chalk.green(`${plugin} is removed`))
     })
   }
 
-  removePlug (plugin: string): void {
+  removePlugin (plugin: string): void {
     const vimrcContent = getVimrcContent(this.vimrc)
 
     const lines = getVimrcLines(vimrcContent)
 
-    const plug = `Plug '${plugin}'`
+    const regex = new RegExp(`^(Bundle|Plugin) '${plugin}'`)
 
-    const lineIndex = lines.findIndex(line => line.includes(plug))
+    const newLines = lines.filter(line => !regex.test(line))
 
-    if (lineIndex < 0) {
-      log(chalk.red(`Could not find ${plugin} to remove`))
-      return
-    }
-
-    let line = lines[lineIndex]
-
-    if (line.includes(`${plug}, {`) || line.includes(`${plug},{`)) {
-      line = line.replace(new RegExp(`(${plug})(,\\s*{\\.+})`), '$1')
-    }
-
-    const newLine = line.includes('|')
-      ? line.split('|').filter(plugItem => !plugItem.includes(plug)).join('|')
-      : line.replace(plug, '')
-
-    lines[lineIndex] = newLine
-
-    fs.writeFileSync(this.vimrc, formVimrcContent(lines))
+    fs.writeFileSync(this.vimrc, formVimrcContent(newLines))
   }
 
   getPluginRegex (pluginToSearch: string): RegexAndGroups {
-    const regex = new RegExp(`Plug '(\\S*${pluginToSearch}\\S*)'`, 'i')
+    const regex = new RegExp(`^(Bundle|Plugin) '(\\S*${pluginToSearch}\\S*)'`, 'i')
     const regexGroups = {
-      Plugin: 1
+      Plugin: 2
     }
 
     return [regex, regexGroups]

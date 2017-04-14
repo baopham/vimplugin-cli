@@ -2,6 +2,7 @@
 
 import fs from 'fs'
 import VimPlug from './VimPlug'
+import Vundle from './Vundle'
 
 export default class VimPluginManager {
   vimrc: Path
@@ -17,6 +18,10 @@ export default class VimPluginManager {
 
     if (vimrcContent.includes('call plug#begin')) {
       return new VimPlug(vimrc, vimdir, settings)
+    }
+
+    if (vimrcContent.includes('call vundle#begin')) {
+      return new Vundle(vimrc, vimdir, settings)
     }
   }
 }

@@ -3,6 +3,7 @@
   "extends": [
     "standard",
     "plugin:flowtype/recommended"
+    "plugin:import/errors"
   ],
   "env": {
     "node": true
