@@ -12,13 +12,13 @@ Usage:
 ------
 
 ```bash
-Usage: vimplugin [options] [command]
+  Usage: vimplugin [options] [command]
 
 
   Commands:
 
-    rm <plugin>    Remove a plugin
-    find <plugin>  Search for an installed plugin
+    rm [plugin]    Remove a plugin
+    find [plugin]  Search for an installed plugin
     list           List all installed plugins
     help [cmd]     display help for [cmd]
 
