@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var homedir = require('os').homedir();
 var lib = require('../lib').default;
 var chalk = require('chalk');
 var helpers = require('../lib/commander-helpers')
@@ -24,4 +23,5 @@ if (plugins.length > 1) {
   return
 }
 
-vimplug.remove(plugins[0])
+vimplug.find(plugins[0])
+

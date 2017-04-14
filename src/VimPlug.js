@@ -32,6 +32,14 @@ export default class VimPlug {
     await this.findAndRemovePluginSetting(pluginToSearch)
   }
 
+  async find (pluginToSearch: string) {
+    const vimrcContent = this.getVimrcContent()
+
+    const mapper = this.buildPluginAndLineIndexMapper(pluginToSearch, vimrcContent)
+
+    Object.keys(mapper).forEach(plugin => log(chalk.green(`Found: ${plugin}`)))
+  }
+
   async findAndRemovePluginSetting (pluginToSearch: string): Promise<*> {
     if (!fs.existsSync(this.settings)) {
       return Promise.resolve()
@@ -98,8 +106,8 @@ export default class VimPlug {
     return fs.readFileSync(this.vimrc, 'utf8')
   }
 
-  buildPluginAndLineIndexMapper (plugin: string, vimrcContent: string): PluginLineIndexMapper {
-    const regex = new RegExp(`Plug '(\\S*${plugin}\\S*)'`, 'i')
+  buildPluginAndLineIndexMapper (pluginToSearch: string, vimrcContent: string): PluginLineIndexMapper {
+    const regex = new RegExp(`Plug '(\\S*${pluginToSearch}\\S*)'`, 'i')
 
     const lines = vimrcContent.split(EOL)
 
