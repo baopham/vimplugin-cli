@@ -8,7 +8,8 @@ import {
   getVimrcLines,
   formVimrcContent,
   buildPluginAndLineIndexMapper,
-  findAndRemovePluginSettings
+  findAndRemovePluginSettings,
+  escapeRegExp
 } from './vimplugin-helpers'
 
 import type {
@@ -98,7 +99,7 @@ export default class Vundle implements VimPlugin {
 
     const lines = getVimrcLines(vimrcContent)
 
-    const regex = new RegExp(`^(Bundle|Plugin) '${plugin}'`)
+    const regex = new RegExp(`^(Bundle|Plugin) '${escapeRegExp(plugin)}'`)
 
     const newLines = lines.filter(line => !regex.test(line))
 
@@ -106,7 +107,7 @@ export default class Vundle implements VimPlugin {
   }
 
   getPluginRegex (pluginToSearch: string): RegexAndGroups {
-    const regex = new RegExp(`^(Bundle|Plugin) '(\\S*${pluginToSearch}\\S*)'`, 'i')
+    const regex = new RegExp(`^(Bundle|Plugin) '(\\S*${escapeRegExp(pluginToSearch)}\\S*)'`, 'i')
     const regexGroups = {
       Plugin: 2
     }

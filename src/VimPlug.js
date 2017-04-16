@@ -8,7 +8,8 @@ import {
   getVimrcLines,
   formVimrcContent,
   buildPluginAndLineIndexMapper,
-  findAndRemovePluginSettings
+  findAndRemovePluginSettings,
+  escapeRegExp
 } from './vimplugin-helpers'
 
 import type {
@@ -125,7 +126,7 @@ export default class VimPlug implements VimPlugin {
     let line = lines[lineIndex]
 
     if (line.includes(`${plug}, {`) || line.includes(`${plug},{`)) {
-      line = line.replace(new RegExp(`(${plug})(,\\s*{\\.+})`), '$1')
+      line = line.replace(new RegExp(`(${escapeRegExp(plug)})(\\s*,\\s*{.+})`), '$1')
     }
 
     const newLine = line.includes('|')
@@ -134,11 +135,15 @@ export default class VimPlug implements VimPlugin {
 
     lines[lineIndex] = newLine
 
+    if (!newLine) {
+      lines.splice(lineIndex, 1)
+    }
+
     fs.writeFileSync(this.vimrc, formVimrcContent(lines))
   }
 
   getPluginRegex (pluginToSearch: string): RegexAndGroups {
-    const regex = new RegExp(`Plug '(\\S*${pluginToSearch}\\S*)'`, 'i')
+    const regex = new RegExp(`Plug '(\\S*${escapeRegExp(pluginToSearch)}\\S*)'`, 'i')
     const regexGroups = {
       Plugin: 1
     }

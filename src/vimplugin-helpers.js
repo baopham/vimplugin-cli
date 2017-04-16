@@ -81,3 +81,8 @@ export async function findAndRemovePluginSettings (pluginToSearch: string, setti
     log(chalk.green(`${path} is removed`))
   })
 }
+
+// @see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+export function escapeRegExp (str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
