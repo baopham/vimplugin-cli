@@ -3,12 +3,12 @@
 import fs from 'fs'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
+import VimPluginSetting from './VimPluginSetting'
 import {
   getVimrcContent,
   getVimrcLines,
   formVimrcContent,
   buildPluginAndLineIndexMapper,
-  findAndRemovePluginSettings,
   escapeRegExp
 } from './vimplugin-helpers'
 
@@ -33,7 +33,9 @@ export default class VimPlug implements VimPlugin {
 
   async remove (pluginToSearch: string): Promise<*> {
     await this.findAndRemovePlugs(pluginToSearch)
-    await findAndRemovePluginSettings(pluginToSearch, this.settings)
+
+    const vimPluginSetting = new VimPluginSetting(this.settings)
+    await vimPluginSetting.findAndRemove(pluginToSearch)
   }
 
   find (pluginToSearch: string): void {

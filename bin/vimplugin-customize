@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 
-var program = require('commander')
 var homedir = require('os').homedir()
+var program = require('commander')
 var lib = require('../lib').default
 var chalk = require('chalk')
 var helpers = require('../lib/commander-helpers')
 
-var VimPluginManager = lib.VimPluginManager
+var VimPluginSetting = lib.VimPluginSetting
 
-helpers
-  .setCommonProgramOptions(program)
+program
+  .option('--settings [settings]', 'Vim settings directory (where you configure your plugins). Default to ~/.vim/settings', `${homedir}/.vim/settings`)
   .parse(process.argv)
 
-var manager = new VimPluginManager(program.vimrc)
-var vimplugin = manager.get(program.vimrc, program.vimdir, program.settings)
+var vimPluginSetting = new VimPluginSetting(program.settings)
 
 var plugins = program.args;
 
@@ -27,4 +26,4 @@ if (plugins.length > 1) {
   return
 }
 
-vimplugin.remove(plugins[0])
+vimPluginSetting.findAndOpen(plugins[0])

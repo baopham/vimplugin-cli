@@ -7,4 +7,5 @@ program
   .command('rm [plugin]', 'Remove a plugin')
   .command('find [plugin]', 'Search for an installed plugin')
   .command('list', 'List all installed plugins')
+  .command('customize [plugin]', 'Open/Edit a plugin setting')
   .parse(process.argv)

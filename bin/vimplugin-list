@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 var program = require('commander')
-var VimPluginManager = require('../lib').default
+var lib = require('../lib').default
 var chalk = require('chalk')
 var helpers = require('../lib/commander-helpers')
+
+var VimPluginManager = lib.VimPluginManager
 
 helpers
   .setCommonProgramOptions(program)
