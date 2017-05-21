@@ -1,12 +1,7 @@
 // @flow
 
-import path from 'path'
 import fs from 'fs'
-import inquirer from 'inquirer'
-import chalk from 'chalk'
 import { EOL } from 'os'
-
-const log = console.log
 
 export type RegexAndGroups = [RegExp, { [regexGroup: string]: number }]
 
@@ -48,38 +43,6 @@ export function buildPluginAndLineIndexMapper (
     }, {})
 
   return mapper
-}
-
-export async function findAndRemovePluginSettings (pluginToSearch: string, settings: Path): Promise<*> {
-  if (!fs.existsSync(settings)) {
-    return Promise.resolve()
-  }
-
-  const filenames = fs.readdirSync(settings)
-
-  const regex = new RegExp(pluginToSearch, 'i')
-
-  const settingFiles = filenames
-  .filter(name => regex.test(name))
-  .map(name => path.join(settings, name))
-
-  const questions = settingFiles.map((path, index) => ({
-    type: 'confirm',
-    name: index + 1,
-    message: `Found setting file: ${path}. You sure you want to remove it?`
-  }))
-
-  const answers = await inquirer.prompt(questions)
-
-  const settingsToRemove = Object.keys(answers)
-    .filter(index => answers[index])
-    .map(index => settingFiles[index - 1])
-
-  settingsToRemove.forEach(path => {
-    log(chalk.green(`Removing setting file ${path}...`))
-    fs.unlink(path)
-    log(chalk.green(`${path} is removed`))
-  })
 }
 
 // @see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
