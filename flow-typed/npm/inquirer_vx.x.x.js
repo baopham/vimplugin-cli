@@ -1,4 +1,4 @@
-// flow-typed signature: a1c3e59b2332a2b87694b8339126cd95
+// flow-typed signature: c54fd29641bb67b3d806a57d1878492e
 // flow-typed version: <<STUB>>/inquirer_v^3.0.6/flow_v0.44.0
 
 /**
@@ -8,8 +8,8 @@
  *
  * Fill this stub out by replacing all the `any` types.
  *
- * Once filled out, we encourage you to share your work with the 
- * community by sending a pull request to: 
+ * Once filled out, we encourage you to share your work with the
+ * community by sending a pull request to:
  * https://github.com/flowtype/flow-typed
  */
 
