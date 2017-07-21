@@ -2,12 +2,11 @@
 
 import fs from 'fs'
 import path from 'path'
-import inquirer from 'inquirer'
 import chalk from 'chalk'
 import open from 'opn'
-import { escapeRegExp } from './vimplugin-helpers'
-
-const log = console.log
+import log from './helpers/log'
+import { escapeRegExp } from './helpers/regex'
+import { confirm } from './helpers/prompt'
 
 export default class VimPluginSetting {
   settings: Path
@@ -42,17 +41,8 @@ export default class VimPluginSetting {
       return
     }
 
-    const questions = settingFiles.map((path, index) => ({
-      type: 'confirm',
-      name: index + 1,
-      message: `Found setting file: ${path}. You sure you want to remove it?`
-    }))
-
-    const answers = await inquirer.prompt(questions)
-
-    const settingsToRemove = Object.keys(answers)
-      .filter(index => answers[index])
-      .map(index => settingFiles[index - 1])
+    const question = path => `Found setting file: ${path}. You sure you want to remove it?`
+    const settingsToRemove = await confirm(settingFiles, question)
 
     settingsToRemove.forEach(path => {
       log(chalk.green(`Removing setting file ${path}...`))
@@ -69,17 +59,8 @@ export default class VimPluginSetting {
       return
     }
 
-    const questions = settingFiles.map((path, index) => ({
-      type: 'confirm',
-      name: index + 1,
-      message: `Found setting file: ${path}. Open it?`
-    }))
-
-    const answers = await inquirer.prompt(questions)
-
-    const settingsToOpen = Object.keys(answers)
-      .filter(index => answers[index])
-      .map(index => settingFiles[index - 1])
+    const question = path => `Found setting file: ${path}. Open it?`
+    const settingsToOpen = await confirm(settingFiles, question)
 
     settingsToOpen.forEach(open)
   }

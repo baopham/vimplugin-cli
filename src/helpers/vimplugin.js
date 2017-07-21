@@ -2,8 +2,7 @@
 
 import fs from 'fs'
 import { EOL } from 'os'
-
-export type RegexAndGroups = [RegExp, { [regexGroup: string]: number }]
+import type { RegexAndGroups } from './regex'
 
 export type PluginLineIndexMapper = {
   [plugin: string]: number
@@ -43,9 +42,4 @@ export function buildPluginAndLineIndexMapper (
     }, {})
 
   return mapper
-}
-
-// @see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-export function escapeRegExp (str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

@@ -1,32 +1,35 @@
 // @flow
 
 import fs from 'fs'
-import inquirer from 'inquirer'
+import path from 'path'
 import chalk from 'chalk'
 import VimPluginSetting from './VimPluginSetting'
+import log from './helpers/log'
 import {
   getVimrcContent,
   getVimrcLines,
   formVimrcContent,
-  buildPluginAndLineIndexMapper,
-  escapeRegExp
-} from './vimplugin-helpers'
+  buildPluginAndLineIndexMapper
+} from './helpers/vimplugin'
+import { escapeRegExp } from './helpers/regex'
+import { confirm } from './helpers/prompt'
+import { findAndRemoveFolders } from './helpers/remove-folders'
 
 import type {
   RegexAndGroups
-} from './vimplugin-helpers'
-
-const log = console.log
+} from './helpers/regex'
 
 export default class VimPlug implements VimPlugin {
   vimrc: Path
   vimdir: Path
   settings: Path
+  sourceCodeDir: Path
 
   constructor (vimrc: Path, vimdir: Path, settings: Path) {
     this.vimrc = vimrc
     this.vimdir = vimdir
     this.settings = settings
+    this.sourceCodeDir = path.join(this.vimdir, 'plugged')
 
     Object.freeze(this)
   }
@@ -36,6 +39,9 @@ export default class VimPlug implements VimPlugin {
 
     const vimPluginSetting = new VimPluginSetting(this.settings)
     await vimPluginSetting.findAndRemove(pluginToSearch)
+
+    log(chalk.green(`Going to check ${this.sourceCodeDir}...`))
+    await findAndRemoveFolders(pluginToSearch, this.sourceCodeDir)
   }
 
   find (pluginToSearch: string): void {
@@ -81,28 +87,16 @@ export default class VimPlug implements VimPlugin {
 
   async findAndRemovePlugs (pluginToSearch: string): Promise<*> {
     const vimrcContent = getVimrcContent(this.vimrc)
-
     const mapper = buildPluginAndLineIndexMapper(this.getPluginRegex(pluginToSearch), vimrcContent)
-
     const plugins = Object.keys(mapper)
 
     if (plugins.length === 0) {
       log(chalk.yellow(`Found no plugins that match ${pluginToSearch}`))
-      return Promise.resolve()
+      return
     }
 
-    const questions = plugins.map((plugin, index) => ({
-      type: 'confirm',
-      // Need to use index here, plugin could contain periods
-      name: index + 1,
-      message: `Found ${plugin}. You sure you want to remove it?`
-    }))
-
-    const answers = await inquirer.prompt(questions)
-
-    const pluginsToRemove = Object.keys(answers)
-      .filter(index => answers[index])
-      .map(index => plugins[index - 1])
+    const question = plugin => `Found ${plugin}. You sure you want to remove it?`
+    const pluginsToRemove = await confirm(plugins, question)
 
     pluginsToRemove.forEach(plugin => {
       log(chalk.green(`Removing ${plugin}...`))
@@ -113,11 +107,8 @@ export default class VimPlug implements VimPlugin {
 
   removePlug (plugin: string): void {
     const vimrcContent = getVimrcContent(this.vimrc)
-
     const lines = getVimrcLines(vimrcContent)
-
     const plug = `Plug '${plugin}'`
-
     const lineIndex = lines.findIndex(line => line.includes(plug))
 
     if (lineIndex < 0) {

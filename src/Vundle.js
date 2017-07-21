@@ -1,32 +1,35 @@
 // @flow
 
 import fs from 'fs'
+import path from 'path'
 import chalk from 'chalk'
-import inquirer from 'inquirer'
 import VimPluginSetting from './VimPluginSetting'
+import log from './helpers/log'
 import {
   getVimrcContent,
   getVimrcLines,
   formVimrcContent,
-  buildPluginAndLineIndexMapper,
-  escapeRegExp
-} from './vimplugin-helpers'
+  buildPluginAndLineIndexMapper
+} from './helpers/vimplugin'
+import { escapeRegExp } from './helpers/regex'
+import { confirm } from './helpers/prompt'
+import { findAndRemoveFolders } from './helpers/remove-folders'
 
 import type {
   RegexAndGroups
-} from './vimplugin-helpers'
-
-const log = console.log
+} from './helpers/regex'
 
 export default class Vundle implements VimPlugin {
   vimrc: Path
   vimdir: Path
   settings: Path
+  sourceCodeDir: Path
 
   constructor (vimrc: Path, vimdir: Path, settings: Path) {
     this.vimrc = vimrc
     this.vimdir = vimdir
     this.settings = settings
+    this.sourceCodeDir = path.join(this.vimdir, 'bundle')
 
     Object.freeze(this)
   }
@@ -37,6 +40,9 @@ export default class Vundle implements VimPlugin {
     const vimPluginSetting = new VimPluginSetting(this.settings)
 
     await vimPluginSetting.findAndRemove(pluginToSearch)
+
+    log(chalk.green(`Going to check ${this.sourceCodeDir}...`))
+    await findAndRemoveFolders(pluginToSearch, this.sourceCodeDir)
   }
 
   find (pluginToSearch: string): void {
@@ -73,22 +79,10 @@ export default class Vundle implements VimPlugin {
 
   async findAndRemovePlugins (pluginToSearch: string): Promise<*> {
     const vimrcContent = getVimrcContent(this.vimrc)
-
     const mapper = buildPluginAndLineIndexMapper(this.getPluginRegex(pluginToSearch), vimrcContent)
-
     const plugins = Object.keys(mapper)
-
-    const questions = plugins.map((plugin, index) => ({
-      type: 'confirm',
-      name: index + 1,
-      message: `Found ${plugin}. You sure you want to remove it?`
-    }))
-
-    const answers = await inquirer.prompt(questions)
-
-    const pluginsToRemove = Object.keys(answers)
-      .filter(index => answers[index])
-      .map(index => plugins[index - 1])
+    const question = plugin => `Found ${plugin}. You sure you want to remove it?`
+    const pluginsToRemove = await confirm(plugins, question)
 
     pluginsToRemove.forEach(plugin => {
       log(chalk.green(`Removing ${plugin}...`))
