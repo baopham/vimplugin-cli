@@ -28,7 +28,7 @@ Usage:
     -V, --version  output the version number
 ```
 
-`vimplugin rm` will remove the line in your .vimrc where it installs the plugin, delete the configuration file for this plugin in the specified settings directory. Before anything is deleted, the command will prompt you for confirmation.  
+`vimplugin rm` will remove the line in your .vimrc where it installs the plugin, delete the configuration file for this plugin in the specified settings directory and finally remove the plugin source code. Before anything is deleted, the command will prompt you for confirmation.  
 
 I built this so that it's quicker to uninstall a plugin with my particular [vim setup](https://github.com/baopham/vim)
 
