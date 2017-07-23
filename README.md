@@ -15,17 +15,19 @@ Usage:
   Usage: vimplugin [options] [command]
 
 
-  Commands:
-
-    rm [plugin]    Remove a plugin
-    find [plugin]  Search for an installed plugin
-    list           List all installed plugins
-    help [cmd]     display help for [cmd]
-
   Options:
 
-    -h, --help     output usage information
     -V, --version  output the version number
+    -h, --help     output usage information
+
+
+  Commands:
+
+    rm [plugin]         Remove a plugin
+    find [plugin]       Search for an installed plugin
+    list                List all installed plugins
+    customize [plugin]  Open/Edit a plugin setting
+    help [cmd]          display help for [cmd]
 ```
 
 `vimplugin rm` will remove the line in your .vimrc where it installs the plugin, delete the configuration file for this plugin in the specified settings directory and finally remove the plugin source code. Before anything is deleted, the command will prompt you for confirmation.  
