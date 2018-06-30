@@ -15,7 +15,8 @@
     "lint": "eslint src",
     "lint:fix": "yarn run lint -- --fix",
     "build": "babel src/ -d lib/",
-    "preversion": "yarn run lint && yarn run build && git add -f lib"
+    "preversion": "yarn run lint && yarn run build && git add -f lib",
+    "prepublish": "git push origin HEAD --follow-tags"
   },
   "repository": {
     "type": "git",
